@@ -12,7 +12,7 @@ use App\Http\Controllers\Controller;
 class SubTasksController extends Controller
 {
     /**
-     * ➕ Crear una nueva subtarea
+     *  Crear una nueva subtarea
      */
     public function store(StoreSubtaskRequest $request)
     {
@@ -25,14 +25,14 @@ class SubTasksController extends Controller
     }
 
     /**
-     * ✏️ Actualizar una subtarea (por ejemplo, marcar completada)
+     *  Actualizar una subtarea (por ejemplo, marcar completada)
      */
     public function update(UpdateSubtaskRequest $request, $id)
     {
         $subtask = Subtask::findOrFail($id);
         $subtask->update($request->validated());
 
-        // ✅ Recalcular estado de la tarea principal
+        //  Recalcular estado de la tarea principal
         $task = $subtask->task;
         $total = $task->subtasks()->count();
         $completed = $task->subtasks()->where('is_completed', true)->count();
@@ -52,7 +52,7 @@ class SubTasksController extends Controller
     }
 
     /**
-     * ❌ Eliminar una subtarea
+     *  Eliminar una subtarea
      */
     public function destroy($id)
     {
