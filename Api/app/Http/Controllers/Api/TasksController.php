@@ -12,33 +12,29 @@ use App\Http\Controllers\Controller;
 class TasksController extends Controller
 {
     /**
-     * 📋 Listar tareas con paginación y filtrado
+     *  Listar tareas con paginación y filtrado
      */
     public function index(Request $request)
     {
-        $query = Task::query();
-
-        // 🔍 Filtrado dinámico
-        if ($request->filled('status') && $request->status !== 'Todos') {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('priority') && $request->priority !== 'Todas') {
-            $query->where('priority', $request->priority);
-        }
+        $query = Task::withCount('subtasks');
 
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('status', 'like', "%$search%")
+                  ->orWhere('priority', 'like', "%$search%");
+            });
         }
 
-        // 🔄 Ordenar y paginar
-        $tasks = $query->orderBy('creation_date', 'desc')->paginate(10);
+        //  Ordenar y paginar
+        $tasks = $query->orderBy('creation_date', 'desc')->paginate(5);
 
         return response()->json($tasks);
     }
 
     /**
-     * ➕ Crear una nueva tarea
+     *  Crear una nueva tarea
      */
     public function store(StoreTaskRequest $request)
     {
@@ -55,7 +51,7 @@ class TasksController extends Controller
     }
 
     /**
-     * 👁️ Mostrar detalles de una tarea
+     *  Mostrar detalles de una tarea
      */
     public function show($id)
     {
@@ -64,7 +60,7 @@ class TasksController extends Controller
     }
 
     /**
-     * ✏️ Actualizar una tarea
+     *  Actualizar una tarea
      */
     public function update(UpdateTaskRequest $request, $id)
     {
@@ -78,7 +74,7 @@ class TasksController extends Controller
     }
 
     /**
-     * 🗓️ Reprogramar fecha de entrega
+     *  Reprogramar fecha de entrega
      */
     public function reschedule(Request $request, $id)
     {
@@ -94,7 +90,7 @@ class TasksController extends Controller
     }
 
     /**
-     * ✅ Marcar tarea como completada
+     *  Marcar tarea como completada
      */
     public function markAsCompleted($id)
     {
@@ -105,7 +101,7 @@ class TasksController extends Controller
     }
 
     /**
-     * ❌ Eliminar una tarea
+     *  Eliminar una tarea
      */
     public function destroy($id)
     {

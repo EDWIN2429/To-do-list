@@ -26,7 +26,7 @@ class UpdateTaskRequest extends FormRequest
             'description' => 'nullable|string',
             'due_date' => 'nullable|date',
             'priority' => 'sometimes|in:Alta,Media,Baja',
-            'status' => 'sometimes|in:Pendiente,En Proceso,Completado,Cancelada,Reprogramada',
+            'status' => 'sometimes|in:Pendiente,En Proceso,Completado,Reprogramada',
         ];
     }
 
