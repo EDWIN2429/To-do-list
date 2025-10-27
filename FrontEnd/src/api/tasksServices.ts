@@ -14,18 +14,22 @@ export const taskService = {
     search?: string;
     status?: string;
     priority?: string;
-  }): Promise<{ data: Task[]; meta: any }> => {
+  }): Promise<{
+    data: Task[];
+    meta: any;
+    allData: Task[];
+  }> => {
     const response = await api.get(API_ENDPOINTS.tasks.index, { params });
     return {
-      data: response.data.data,
+      data: response.data.paginated.data,
+      allData: response.data.all,
       meta: {
-        current_page: response.data.current_page,
-        last_page: response.data.last_page,
-        total: response.data.total,
+        current_page: response.data.paginated.current_page,
+        last_page: response.data.paginated.last_page,
+        total: response.data.paginated.total,
       },
     };
   },
-
 
   // Obtener una tarea por ID
   getById: async (id: number): Promise<Task> => {
@@ -36,7 +40,8 @@ export const taskService = {
   // Crear nueva tarea
   create: async (taskData: Omit<Task, "id">): Promise<Task> => {
     const response = await api.post(API_ENDPOINTS.tasks.store, taskData);
-    return response.data.task; // Backend devuelve { message, task }
+    // Devolver task si viene en response.data.task, sino devolver response.data (compatible con ambos backends)
+    return response.data?.task ?? response.data;
   },
 
   // Actualizar tarea
@@ -58,9 +63,10 @@ export const taskService = {
 };
 
 export const subtaskService = {
+  // Subtareas
   create: async (subtaskData: Omit<SubTask, "id">): Promise<SubTask> => {
     const response = await api.post(API_ENDPOINTS.subtasks.store, subtaskData);
-    return response.data.subtask; // Backend devuelve { message, subtask }
+    return response.data?.subtask ?? response.data;
   },
 
   update: async (
@@ -71,7 +77,7 @@ export const subtaskService = {
       API_ENDPOINTS.subtasks.update(id),
       subtaskData
     );
-    return response.data.subtask; // Backend devuelve { message, subtask }
+    return response.data?.subtask ?? response.data;
   },
 
   delete: async (id: number): Promise<void> => {

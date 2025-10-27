@@ -16,38 +16,30 @@ class TasksController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Task::withCount('subtasks');
+        $query = Task::with('subtasks');
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%$search%")
-                  ->orWhere('status', 'like', "%$search%")
-                  ->orWhere('priority', 'like', "%$search%");
+                    ->orWhere('status', 'like', "%$search%")
+                    ->orWhere('priority', 'like', "%$search%");
             });
         }
 
-        //  Ordenar y paginar
-        $tasks = $query->orderBy('creation_date', 'desc')->paginate(5);
+        // CLONAR la query antes de paginar
+        $queryForAll = clone $query;
 
-        return response()->json($tasks);
-    }
+        // Obtener datos paginados
+        $paginatedTasks = $query->orderBy('creation_date', 'desc')->paginate(5);
 
-    /**
-     *  Crear una nueva tarea
-     */
-    public function store(StoreTaskRequest $request)
-    {
-        $task = Task::create([
-            ...$request->validated(),
-            'creation_date' => now(),
-            'status' => 'Pendiente',
-        ]);
+        // Obtener datos completos (sin paginación) usando la query clonada
+        $allTasks = $queryForAll->orderBy('creation_date', 'desc')->get();
 
         return response()->json([
-            'message' => 'Tarea creada con éxito',
-            'task' => $task,
-        ], 201);
+            'paginated' => $paginatedTasks,
+            'all' => $allTasks
+        ]);
     }
 
     /**
@@ -109,5 +101,29 @@ class TasksController extends Controller
         $task->delete();
 
         return response()->json(['message' => 'Tarea eliminada correctamente']);
+    }
+
+    /**
+     *  Store a newly created task.
+     */
+    public function store(StoreTaskRequest $request)
+    {
+        try {
+            $data = $request->validated();
+
+            // Asegurar status por defecto si no viene
+            if (!isset($data['status'])) {
+                $data['status'] = 'Pendiente';
+            }
+
+            $task = Task::create($data);
+
+            return response()->json($task, 201);
+        } catch (\Throwable $e) {
+            if (config('app.debug')) {
+                return response()->json(['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
+            }
+            return response()->json(['message' => 'Error interno del servidor.'], 500);
+        }
     }
 }

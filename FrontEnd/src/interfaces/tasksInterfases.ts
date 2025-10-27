@@ -11,6 +11,9 @@ export interface Task {
     | "Reprogramada";
   priority: "Alta" | "Media" | "Baja";
   subtasks?: SubTask[];
+  subtasks_count?: number; // <- Contador (opcional)
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface SubTask {

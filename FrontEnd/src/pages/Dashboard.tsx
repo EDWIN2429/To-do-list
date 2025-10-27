@@ -1,6 +1,5 @@
 // src/pages/Dashboard.tsx
 
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -30,6 +29,7 @@ import {
   AlertCircle,
   Search,
   Plus,
+  Trash2,
 } from "lucide-react";
 
 export default function Dashboard() {
@@ -37,6 +37,7 @@ export default function Dashboard() {
   //  Estados locales
   // -------------------------------------------------------
   const [tasks, setTasks] = useState<Task[]>([]); // Lista de tareas
+  const [allTasks, setAllTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true); // Control de carga
   const [search, setSearch] = useState(""); // Texto de búsqueda
   const [page, setPage] = useState(1); // Página actual de la paginación
@@ -62,11 +63,29 @@ export default function Dashboard() {
         search,
       });
       setTasks(response.data);
+      setAllTasks(response.allData);
       setMeta(response.meta);
     } catch (error) {
       console.error("Error al cargar tareas:", error);
     } finally {
       setLoading(false);
+    }
+  };
+  // -------------------------------------------------------
+  //  Función para eliminar tarea
+  // -------------------------------------------------------
+  const handleDeleteTask = async (taskId: number) => {
+    if (!window.confirm("¿Estás seguro de que quieres eliminar esta tarea?")) {
+      return;
+    }
+
+    try {
+      await taskService.delete(taskId);
+      alert("Tarea eliminada correctamente");
+      fetchTasks(); // Recargar la lista
+    } catch (error) {
+      console.error("Error al eliminar tarea:", error);
+      alert("Error al eliminar la tarea. Por favor, intenta nuevamente.");
     }
   };
 
@@ -88,19 +107,19 @@ export default function Dashboard() {
         return {
           variant: "secondary" as const,
           className:
-            "bg-yellow-500 text-white w-20 h-6 flex items-center justify-center text-center",
+            "text-sm font-bold text-yellow-500 w-25 h-6 flex items-center justify-center text-center",
         };
       case "En Proceso":
         return {
           variant: "default" as const,
           className:
-            "bg-blue-500 text-white w-20 h-6 flex items-center justify-center text-center",
+            "  text-sm font-bold text-blue-500 w-25 h-6 flex items-center justify-center text-center",
         };
       case "Completado":
         return {
           variant: "default" as const,
           className:
-            "bg-green-500 text-white w-20 h-6 flex items-center justify-center text-center",
+            "text-sm font-bold text-green-500 w-25 h-6 flex items-center justify-center text-center",
         };
       case "Reprogramada":
         return { variant: "outline" as const, className: "" };
@@ -118,19 +137,19 @@ export default function Dashboard() {
         return {
           variant: "destructive" as const,
           className:
-            "bg-red-500 text-white w-16 h-6 flex items-center justify-center text-center",
+            "text-sm font-bold text-red-500 w-25 h-6 flex items-center justify-center text-center",
         };
       case "Media":
         return {
           variant: "default" as const,
           className:
-            "bg-yellow-500 text-white w-16 h-6 flex items-center justify-center text-center",
+            "text-sm font-bold text-yellow-500 w-25 h-6 flex items-center justify-center text-center",
         };
       case "Baja":
         return {
           variant: "secondary" as const,
           className:
-            "bg-green-500 text-white w-16 h-6 flex items-center justify-center text-center",
+            "text-sm font-bold text-green-500 w-25 h-6 flex items-center justify-center text-center",
         };
       default:
         return { variant: "default" as const, className: "" };
@@ -141,10 +160,10 @@ export default function Dashboard() {
   //  Cálculo de estadísticas
   // -------------------------------------------------------
   const stats = {
-    total: tasks.length,
-    pendientes: tasks.filter((t) => t.status === "Pendiente").length,
-    completadas: tasks.filter((t) => t.status === "Completado").length,
-    altaPrioridad: tasks.filter((t) => t.priority === "Alta").length,
+    total: allTasks.length,
+    pendientes: allTasks.filter((t) => t.status === "Pendiente").length,
+    completadas: allTasks.filter((t) => t.status === "Completado").length,
+    altaPrioridad: allTasks.filter((t) => t.priority === "Alta").length,
   };
 
   // -------------------------------------------------------
@@ -180,7 +199,7 @@ export default function Dashboard() {
         <div className="flex justify-end">
           <Button
             onClick={() => navigate("/create")}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+            className="bg-sky-600 hover:bg-sky-700 text-white"
           >
             <Plus className="h-4 w-4" />
             Nueva Tarea
@@ -320,18 +339,61 @@ export default function Dashboard() {
                     </TableCell>
 
                     {/* Subtareas */}
-                    <TableCell>{task.subtasks?.length || 0}</TableCell>
+                    <TableCell>
+                      <div className="text-sm font-bold text-blue-500 flex flex-col gap-1">
+                        <Badge variant="secondary" className="text-sm font-bold text-blue-500 bg-blue-50 border-blue-200 w-fit">
+                          {task.subtasks?.length || 0} subtareas
+                        </Badge>
+                        {task.subtasks &&
+                          task.subtasks.some((st) => !st.is_completed) && (
+                            <Badge
+                              variant="secondary"
+                              className="text-sm font-bold text-red-500 bg-red-50 border-red-200 w-fit"
+                            >
+                              {
+                                task.subtasks.filter((st) => !st.is_completed)
+                                  .length
+                              }{" "}
+                              pendientes
+                            </Badge>
+                            )}
+                            
+                            {task.subtasks && 
+                             task.subtasks.length > 0 && 
+                             task.subtasks.every((st) => st.is_completed) && (
+                              <Badge
+                                variant="secondary"
+                                className="text-sm font-bold text-green-500 bg-green-50 border-green-200 w-fit"
+                              >
+                                <CheckCircle2 className="h-3 w-3 mr-1" />
+                                Todas completadas
+                              </Badge>
+                          )}
+                      </div>
+                    </TableCell>
 
                     {/* Botón para ver tarea */}
                     <TableCell>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => navigate(`/task/${task.id}`)}
-                      >
-                        <Eye className="mr-2 h-4 w-4" />
-                        Ver
-                      </Button>
+                      <div className="flex gap-2">
+                        {/* Botón Ver */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => navigate(`/task/${task.id}`)}
+                        >
+                          <Eye className="mr-2 h-4 w-4" />
+                          Ver
+                        </Button>
+
+                        {/* Botón Eliminar - NUEVO BOTÓN */}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteTask(task.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
