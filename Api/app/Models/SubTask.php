@@ -9,6 +9,8 @@ class SubTask extends Model
 {
     use HasFactory;
 
+    protected $table = 'subtasks'; 
+
     protected $fillable = [
         'task_id',
         'title',

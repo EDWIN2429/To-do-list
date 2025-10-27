@@ -1,15 +1,16 @@
 import * as React from "react"
-
 import { cn } from "@/lib/utils"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (
     <div
       data-slot="table-container"
-      className="relative w-full overflow-x-auto"
+      // Contenedor con borde, esquinas redondeadas y sombra sutil
+      className="relative w-full overflow-x-auto rounded-lg border border-[--color-table-divider] shadow-sm"
     >
       <table
         data-slot="table"
+        // Eliminado el border-t ya que el contenedor lo maneja
         className={cn("w-full caption-bottom text-sm", className)}
         {...props}
       />
@@ -21,7 +22,8 @@ function TableHeader({ className, ...props }: React.ComponentProps<"thead">) {
   return (
     <thead
       data-slot="table-header"
-      className={cn("[&_tr]:border-b", className)}
+      // Fondo blanco y borde inferior con el color de divisor
+      className={cn("bg-background border-b border-[--color-table-divider]", className)}
       {...props}
     />
   )
@@ -55,7 +57,9 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        // Borde inferior y hover con las variables precisas
+        "border-b border-[--color-table-divider] transition-colors data-[state=selected]:bg-muted",
+        "hover:bg-[--color-table-hover]",
         className
       )}
       {...props}
@@ -68,7 +72,10 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "text-foreground h-10 px-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        // Padding, color de texto y alineación
+        "h-auto px-4 py-3 text-left align-middle font-medium text-[--color-table-text] whitespace-nowrap",
+        // Ejemplo de alineación para centrar contenido en algunas columnas:
+        "[&:nth-child(3)]:text-center [&:nth-child(4)]:text-center [&:last-child]:text-center", 
         className
       )}
       {...props}
@@ -81,7 +88,10 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
     <td
       data-slot="table-cell"
       className={cn(
-        "p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+        // Padding y color de texto para las celdas
+        "px-4 py-2.5 align-middle text-[--color-table-text] whitespace-nowrap",
+        // Ejemplo de alineación para centrar contenido en algunas celdas:
+        "[&:nth-child(3)]:text-center [&:nth-child(4)]:text-center [&:nth-child(5)]:text-center [&:last-child]:text-center", 
         className
       )}
       {...props}

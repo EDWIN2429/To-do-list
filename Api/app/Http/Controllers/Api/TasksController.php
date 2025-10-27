@@ -12,50 +12,38 @@ use App\Http\Controllers\Controller;
 class TasksController extends Controller
 {
     /**
-     * 📋 Listar tareas con paginación y filtrado
+     *  Listar tareas con paginación y filtrado
      */
     public function index(Request $request)
     {
-        $query = Task::query();
-
-        // 🔍 Filtrado dinámico
-        if ($request->filled('status') && $request->status !== 'Todos') {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('priority') && $request->priority !== 'Todas') {
-            $query->where('priority', $request->priority);
-        }
+        $query = Task::with('subtasks');
 
         if ($request->filled('search')) {
-            $query->where('title', 'like', '%' . $request->search . '%');
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                    ->orWhere('status', 'like', "%$search%")
+                    ->orWhere('priority', 'like', "%$search%");
+            });
         }
 
-        // 🔄 Ordenar y paginar
-        $tasks = $query->orderBy('creation_date', 'desc')->paginate(10);
+        // CLONAR la query antes de paginar
+        $queryForAll = clone $query;
 
-        return response()->json($tasks);
-    }
+        // Obtener datos paginados
+        $paginatedTasks = $query->orderBy('creation_date', 'desc')->paginate(5);
 
-    /**
-     * ➕ Crear una nueva tarea
-     */
-    public function store(StoreTaskRequest $request)
-    {
-        $task = Task::create([
-            ...$request->validated(),
-            'creation_date' => now(),
-            'status' => 'Pendiente',
-        ]);
+        // Obtener datos completos (sin paginación) usando la query clonada
+        $allTasks = $queryForAll->orderBy('creation_date', 'desc')->get();
 
         return response()->json([
-            'message' => 'Tarea creada con éxito',
-            'task' => $task,
-        ], 201);
+            'paginated' => $paginatedTasks,
+            'all' => $allTasks
+        ]);
     }
 
     /**
-     * 👁️ Mostrar detalles de una tarea
+     *  Mostrar detalles de una tarea
      */
     public function show($id)
     {
@@ -64,7 +52,7 @@ class TasksController extends Controller
     }
 
     /**
-     * ✏️ Actualizar una tarea
+     *  Actualizar una tarea
      */
     public function update(UpdateTaskRequest $request, $id)
     {
@@ -78,7 +66,7 @@ class TasksController extends Controller
     }
 
     /**
-     * 🗓️ Reprogramar fecha de entrega
+     *  Reprogramar fecha de entrega
      */
     public function reschedule(Request $request, $id)
     {
@@ -94,7 +82,7 @@ class TasksController extends Controller
     }
 
     /**
-     * ✅ Marcar tarea como completada
+     *  Marcar tarea como completada
      */
     public function markAsCompleted($id)
     {
@@ -105,7 +93,7 @@ class TasksController extends Controller
     }
 
     /**
-     * ❌ Eliminar una tarea
+     *  Eliminar una tarea
      */
     public function destroy($id)
     {
@@ -113,5 +101,29 @@ class TasksController extends Controller
         $task->delete();
 
         return response()->json(['message' => 'Tarea eliminada correctamente']);
+    }
+
+    /**
+     *  Store a newly created task.
+     */
+    public function store(StoreTaskRequest $request)
+    {
+        try {
+            $data = $request->validated();
+
+            // Asegurar status por defecto si no viene
+            if (!isset($data['status'])) {
+                $data['status'] = 'Pendiente';
+            }
+
+            $task = Task::create($data);
+
+            return response()->json($task, 201);
+        } catch (\Throwable $e) {
+            if (config('app.debug')) {
+                return response()->json(['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()], 500);
+            }
+            return response()->json(['message' => 'Error interno del servidor.'], 500);
+        }
     }
 }
