@@ -1,326 +1,298 @@
-# 🚀 Aplicación de Gestión de Tareas Avanzada (ToDo List) - PLAN INTENSIVO 3 DÍAS
+# 📝 To-Do List - Sistema de Gestión de Tareas
 
-Una aplicación completa de gestión de tareas desarrollada con Laravel 12 y React, que incluye subtareas, seguimiento de estado detallado, priorización, alertas de vencimiento y una interfaz de usuario moderna.
+Una aplicación completa de gestión de tareas desarrollada con **Laravel 12** (backend API REST) y **React + TypeScript** (frontend SPA), que incluye subtareas, sistema de prioridades, alertas de vencimiento en tiempo real y una interfaz moderna con shadcn/ui.
 
-## ⚡ PLAN INTENSIVO - 3 DÍAS
+---
 
-### 🎯 Objetivo: MVP Funcional Completo en 72 Horas
+## 📑 Tabla de Contenidos
 
-## 📋 Características Principales (MVP)
+- [Características](#-características)
+- [Stack Tecnológico](#️-stack-tecnológico)
+- [Arquitectura del Proyecto](#-arquitectura-del-proyecto)
+- [Requisitos Previos](#-requisitos-previos)
+- [Instalación y Configuración](#-instalación-y-configuración)
+  - [Backend (API Laravel)](#1-backend-api-laravel)
+  - [Frontend (React)](#2-frontend-react)
+- [Estructura de Ramas Git](#-estructura-de-ramas-git)
+- [Configuración del Repositorio en GitHub](#-configuración-del-repositorio-en-github)
+- [Uso de la Aplicación](#-uso-de-la-aplicación)
+- [API Endpoints](#-api-endpoints)
+- [Componentes Principales](#️-componentes-principales)
+- [Sistema de Alertas](#-sistema-de-alertas)
+- [Variables de Entorno](#-variables-de-entorno)
+- [Scripts Disponibles](#-scripts-disponibles)
+- [Despliegue](#-despliegue)
+- [Contribución](#-contribución)
+- [Licencia](#-licencia)
 
-- **Dashboard Interactivo**: Tabla con todas las tareas, filtrado básico
-- **Gestión de Subtareas**: Creación y seguimiento de subtareas
-- **Estados Automáticos**: Cambio automático de estado basado en progreso
-- **Sistema de Prioridades**: Alta, Media, Baja
-- **Alertas Básicas**: Notificaciones para tareas próximas a vencer
-- **Interfaz Funcional**: UI básica pero completa
+---
+
+## ✨ Características
+
+### Funcionalidades Principales
+
+- **Dashboard Interactivo**: Tabla con todas las tareas, búsqueda, filtrado y paginación.
+- **CRUD Completo de Tareas**: Crear, leer, actualizar y eliminar tareas.
+- **Gestión de Subtareas**: Agregar subtareas a cada tarea y marcarlas como completadas.
+- **Estados Automáticos**: El estado de la tarea cambia automáticamente a "completado" cuando todas sus subtareas están terminadas.
+- **Sistema de Prioridades**: Clasificación en Alta, Media y Baja con indicadores visuales.
+- **Alertas de Vencimiento**: Notificaciones en tiempo real para tareas vencidas y próximas a vencer.
+- **Drawer de Notificaciones**: Panel lateral con contador en la campanita del header.
+- **Interfaz Moderna**: UI construida con shadcn/ui + Tailwind CSS.
+- **Responsive Design**: Adaptado para desktop, tablet y móvil.
+
+### Características Técnicas
+
+- **API REST**: Endpoints bien estructurados con validación y manejo de errores.
+- **Zona Horaria**: Configurada para Colombia (America/Bogota).
+- **Migraciones**: Base de datos versionada.
+- **TypeScript**: Tipado fuerte en el frontend.
+- **Axios Interceptors**: Manejo centralizado de errores HTTP.
+
+---
 
 ## 🛠️ Stack Tecnológico
 
-### Backend
+### Backend (API)
 
-- **Laravel 12** - Framework PHP
-- **SQLite** - Base de datos (rápida configuración)
-- **Eloquent ORM** - Mapeo objeto-relacional
-- **API REST** - Endpoints esenciales
+| Tecnología       | Versión | Descripción                       |
+| ---------------- | ------- | --------------------------------- |
+| **Laravel**      | 12.x    | Framework PHP para API REST       |
+| **PHP**          | 8.2+    | Lenguaje de programación          |
+| **SQLite**       | 3.x     | Base de datos ligera (desarrollo) |
+| **Eloquent ORM** | -       | ORM de Laravel                    |
+| **Carbon**       | -       | Manipulación de fechas y horas    |
 
-### Frontend
+### Frontend (SPA)
 
-- **React** - Biblioteca de interfaz de usuario
-- **React Router** - Navegación y routing
-- **shadcn/ui** - Componentes UI pre-construidos
-- **Tailwind CSS** - Framework de estilos (ya configurado)
-- **Vite** - Herramienta de construcción
-- **Axios** - Cliente HTTP
+| Tecnología       | Versión | Descripción                         |
+| ---------------- | ------- | ----------------------------------- |
+| **React**        | 18.x    | Biblioteca de interfaces de usuario |
+| **TypeScript**   | 5.x     | Superset tipado de JavaScript       |
+| **Vite**         | 5.x     | Empaquetador ultrarrápido           |
+| **React Router** | 6.x     | Enrutamiento del lado del cliente   |
+| **Axios**        | 1.x     | Cliente HTTP para consumo de API    |
+| **shadcn/ui**    | -       | Componentes UI con Radix UI         |
+| **Tailwind CSS** | 3.x     | Framework CSS utilitario            |
+| **Lucide React** | -       | Iconos SVG                          |
 
-## 📊 Estructura de Base de Datos Simplificada
 
-### Tabla: tasks
+## 📋 Requisitos Previos
 
-```sql
-- id (bigint, primary key)
-- title (string, required)
-- description (text, nullable)
-- due_date (datetime, nullable)
-- priority (enum: 'alta', 'media', 'baja', default: 'media')
-- status (enum: 'pendiente', 'en_proceso', 'completado', default: 'pendiente')
-- created_at (timestamp)
-- updated_at (timestamp)
-```
+Antes de comenzar, asegúrate de tener instalado:
 
-### Tabla: subtasks
+- **Node.js** ≥ 18.x ([descargar](https://nodejs.org/))
+- **npm** ≥ 9.x (incluido con Node.js)
+- **PHP** ≥ 8.2 ([descargar](https://www.php.net/downloads))
+- **Composer** ≥ 2.x ([descargar](https://getcomposer.org/download/))
+- **Git** ([descargar](https://git-scm.com/downloads))
+- **SQLite** (incluido con PHP en Windows)
 
-```sql
-- id (bigint, primary key)
-- task_id (bigint, foreign key)
-- title (string, required)
-- is_completed (boolean, default: false)
-- created_at (timestamp)
-- updated_at (timestamp)
-```
+---
 
-## 🚀 PLAN INTENSIVO - 3 DÍAS
+## 🚀 Instalación y Configuración
 
-### 📅 DÍA 1: BACKEND COMPLETO (8-10 horas)
+### 1) Backend (API Laravel)
 
-#### 🌅 Mañana (4-5 horas)
-
-**Objetivo: Base de datos y modelos funcionando**
-
-- [ ] **Crear migraciones** (30 min)
-
-  ```bash
-  php artisan make:migration create_tasks_table
-  php artisan make:migration create_subtasks_table
-  ```
-
-- [ ] **Ejecutar migraciones** (15 min)
-
-  ```bash
-  php artisan migrate
-  ```
-
-- [ ] **Crear modelos** (45 min)
-
-  ```bash
-  php artisan make:model Task
-  php artisan make:model Subtask
-  ```
-
-- [ ] **Configurar relaciones** (30 min)
-
-  - Task hasMany Subtasks
-  - Subtask belongsTo Task
-
-- [ ] **Crear controladores API** (60 min)
-
-  ```bash
-  php artisan make:controller Api/TaskController --api
-  php artisan make:controller Api/SubtaskController --api
-  ```
-
-- [ ] **Implementar métodos CRUD básicos** (90 min)
-  - TaskController: index, store, show, update, destroy
-  - SubtaskController: store, update, destroy
-
-#### 🌆 Tarde (4-5 horas)
-
-**Objetivo: API funcional con lógica de negocio**
-
-- [ ] **Definir rutas API** (30 min)
-
-  ```php
-  Route::apiResource('tasks', TaskController::class);
-  Route::apiResource('subtasks', SubtaskController::class);
-  ```
-
-- [ ] **Implementar validación** (60 min)
-
-  - Request classes para validación
-  - Reglas de validación para tasks y subtasks
-
-- [ ] **Lógica de cambio de estado** (90 min)
-
-  - Observer o método en modelo Task
-  - Cambio automático a "en_proceso" cuando hay subtareas completadas
-  - Cambio a "completado" cuando todas las subtareas están completas
-
-- [ ] **Sistema de alertas básico** (60 min)
-
-  - Método para obtener tareas próximas a vencer
-  - Endpoint para alertas
-
-- [ ] **Testing básico** (30 min)
-  - Probar endpoints con Postman/Insomnia
-
-### 📅 DÍA 2: FRONTEND REACT (8-10 horas)
-
-#### 🌅 Mañana (4-5 horas)
-
-**Objetivo: Estructura base y componentes principales**
-
-- [ ] **Configurar React Router** (30 min)
-
-  ```bash
-  npm install react-router-dom
-  ```
-
-- [ ] **Crear estructura de componentes** (60 min)
-
-  ```
-  src/
-  ├── components/
-  │   ├── Layout/
-  │   ├── TaskTable/
-  │   ├── CreateTaskForm/
-  │   ├── TaskDetail/
-  │   └── AlertDrawer/
-  ├── pages/
-  │   ├── Dashboard.jsx
-  │   ├── CreateTask.jsx
-  │   └── TaskDetail.jsx
-  └── App.jsx
-  ```
-
-- [ ] **Configurar Axios** (30 min)
-
-  - Base URL para API
-  - Interceptors para manejo de errores
-
-- [ ] **Crear Layout principal** (90 min)
-
-  - Header con navegación
-  - Sidebar para alertas
-  - Estructura base responsive
-
-- [ ] **Implementar Dashboard** (90 min)
-  - Tabla básica de tareas
-  - Botón "Crear Tarea"
-  - Navegación a otras vistas
-
-#### 🌆 Tarde (4-5 horas)
-
-**Objetivo: Funcionalidades principales**
-
-- [ ] **Formulario de creación** (120 min)
-
-  - Campos principales de tarea
-  - Gestión dinámica de subtareas
-  - Validación básica
-  - Envío a API
-
-- [ ] **Vista de detalle** (120 min)
-
-  - Mostrar información completa
-  - Lista de subtareas con checkboxes
-  - Botón "Completado" condicional
-  - Actualización de estado
-
-- [ ] **Sistema de alertas** (60 min)
-  - Indicador en header
-  - Drawer lateral básico
-  - Cards de tareas con alerta
-
-### 📅 DÍA 3: INTEGRACIÓN Y PULIMIENTO (8-10 horas)
-
-#### 🌅 Mañana (4-5 horas)
-
-**Objetivo: Integración completa y funcionalidades avanzadas**
-
-- [ ] **Integrar todas las vistas** (90 min)
-
-  - Navegación entre componentes
-  - Estado compartido
-  - Actualización en tiempo real
-
-- [ ] **Implementar filtros** (90 min)
-
-  - Filtro por estado
-  - Filtro por prioridad
-  - Búsqueda por texto
-
-- [ ] **Paginación básica** (60 min)
-
-  - Componente de paginación
-  - Integración con API
-
-- [ ] **Mejoras de UX** (60 min)
-  - Loading states
-  - Mensajes de confirmación
-  - Manejo de errores
-
-#### 🌆 Tarde (4-5 horas)
-
-**Objetivo: Pulimiento y testing**
-
-- [ ] **Estilos y responsividad** (120 min)
-
-  - Mejorar diseño con Tailwind
-  - Responsive design
-  - Indicadores visuales de estado
-
-- [ ] **Testing manual completo** (90 min)
-
-  - Flujo completo de usuario
-  - Casos edge
-  - Corrección de bugs
-
-- [ ] **Optimizaciones finales** (60 min)
-
-  - Performance básica
-  - Código limpio
-  - Documentación mínima
-
-- [ ] **Deploy básico** (30 min)
-  - Configuración para producción
-  - Build final
-
-## ⚡ COMANDOS RÁPIDOS DE CONFIGURACIÓN
-
-### Día 1 - Backend Setup
+#### 1.1. Clonar el repositorio
 
 ```bash
-# Crear migraciones
-php artisan make:migration create_tasks_table
-php artisan make:migration create_subtasks_table
+git clone https://github.com/tu-usuario/To-Do-List.git
+cd To-Do-List/Api
+```
 
-# Crear modelos
-php artisan make:model Task
-php artisan make:model Subtask
+#### 1.2. Instalar dependencias de PHP
 
-# Crear controladores
-php artisan make:controller Api/TaskController --api
-php artisan make:controller Api/SubtaskController --api
+```bash
+composer install
+```
 
-# Ejecutar migraciones
+#### 1.3. Configurar el archivo `.env`
+
+Copia el archivo de ejemplo y edita las variables:
+
+```bash
+copy .env.example .env
+```
+
+Edita `Api/.env`:
+
+```env
+APP_NAME="To-Do List API"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_TIMEZONE=America/Bogota
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=sqlite
+# DB_DATABASE se genera automáticamente con el siguiente comando
+
+VITE_APP_NAME="${APP_NAME}"
+```
+
+#### 1.4. Generar clave de la aplicación
+
+```bash
+php artisan key:generate
+```
+
+#### 1.5. Crear la base de datos SQLite
+
+```bash
+touch database/database.sqlite
+```
+
+_En Windows (PowerShell):_
+
+```powershell
+New-Item database/database.sqlite -ItemType File
+```
+
+#### 1.6. Ejecutar las migraciones
+
+```bash
 php artisan migrate
+```
 
-# Iniciar servidor
+#### 1.7. Limpiar cachés de configuración
+
+```bash
+php artisan config:clear
+php artisan optimize:clear
+```
+
+#### 1.8. Iniciar el servidor de desarrollo
+
+```bash
 php artisan serve
 ```
 
-### Día 2 - Frontend Setup
+El backend estará disponible en: **http://localhost:8000**
+
+---
+
+### 2) Frontend (React)
+
+#### 2.1. Navegar a la carpeta del frontend
 
 ```bash
-# Instalar dependencias
-npm install react-router-dom axios
-npm install @radix-ui/react-slot class-variance-authority clsx tailwind-merge
+cd ../FrontEnd
+```
 
-# Configurar shadcn/ui
-npx shadcn@latest init
+#### 2.2. Instalar dependencias de Node.js
 
-# Instalar componentes shadcn/ui necesarios
-npx shadcn@latest add button
-npx shadcn@latest add card
-npx shadcn@latest add input
-npx shadcn@latest add label
-npx shadcn@latest add textarea
-npx shadcn@latest add select
-npx shadcn@latest add checkbox
-npx shadcn@latest add badge
-npx shadcn@latest add sheet
-npx shadcn@latest add table
-npx shadcn@latest add pagination
+```bash
+npm install
+```
 
-# Crear estructura de carpetas
-mkdir -p resources/js/components/{Layout,TaskTable,CreateTaskForm,TaskDetail,AlertDrawer}
-mkdir -p resources/js/pages
+#### 2.3. Configurar el archivo `.env`
 
-# Desarrollo
+Crea `FrontEnd/.env` con:
+
+```env
+VITE_API_URL=http://localhost:8000
+```
+
+#### 2.4. Iniciar el servidor de desarrollo
+
+```bash
 npm run dev
 ```
 
-### Día 3 - Build Final
+El frontend estará disponible en: **http://localhost:5173**
 
-```bash
-# Build para producción
-npm run build
+---
 
-# Optimizar Laravel
-composer install --optimize-autoloader --no-dev
-php artisan config:cache
-php artisan route:cache
+## 🌿 Estructura de Ramas Git
+
+El proyecto sigue una estrategia de branching para organizar el desarrollo:
+
 ```
+main                          # Rama principal (producción estable)
+├── feat/frontend-scaffolding # Configuración inicial del frontend (React + Vite + shadcn/ui)
+└── feature/implementación-Api # Desarrollo del backend (Laravel + API REST + Alertas)
+```
+
+### Descripción de Ramas
+
+| Rama                         | Descripción                                                               |
+| ---------------------------- | ------------------------------------------------------------------------- |
+| `main`                       | Código estable listo para producción. Solo se fusionan ramas completadas. |
+| `feat/frontend-scaffolding`  | Configuración inicial del frontend: React, TypeScript, Vite, shadcn/ui.   |
+| `feature/implementación-Api` | Desarrollo del backend: modelos, migraciones, controladores, alertas.     |
+
+### Flujo de Trabajo Git
+
+1. **Crear una nueva rama** desde `main` para cada feature:
+
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b feature/nombre-de-la-feature
+   ```
+
+2. **Desarrollar y hacer commits**:
+
+   ```bash
+   git add .
+   git commit -m "feat: descripción del cambio"
+   ```
+
+3. **Push a GitHub**:
+
+   ```bash
+   git push origin feature/nombre-de-la-feature
+   ```
+
+4. **Crear un Pull Request** en GitHub para fusionar a `main`.
+
+
+## 📖 Uso de la Aplicación
+
+### 1. Dashboard (Página Principal)
+
+- **URL**: `http://localhost:5173/`
+- **Funcionalidades**:
+  - Ver todas las tareas en una tabla.
+  - Buscar tareas por título.
+  - Navegar entre páginas (paginación).
+  - Botón "Crear Tarea" → redirige a `/create`.
+  - Botón "Ver" en cada fila → redirige a `/task/:id`.
+  - Botón "Eliminar" → elimina la tarea con confirmación.
+
+### 2. Crear Tarea
+
+- **URL**: `http://localhost:5173/create`
+- **Funcionalidades**:
+  - Formulario con campos:
+    - Título (requerido)
+    - Descripción
+    - Prioridad (alta | media | baja)
+    - Fecha de vencimiento (datetime-local)
+    - Subtareas (agregar/eliminar dinámicamente)
+  - Botón "Guardar" → envía POST a `/api/tasks` y redirige al Dashboard.
+
+### 3. Detalle de Tarea
+
+- **URL**: `http://localhost:5173/task/:id`
+- **Funcionalidades**:
+  - Muestra toda la información de la tarea.
+  - Lista de subtareas con checkboxes para marcar como completadas.
+  - Botón "Marcar como Completado" (solo si todas las subtareas están completas).
+  - Botón "Editar" → abre formulario de edición.
+  - Botón "Eliminar" → elimina y redirige al Dashboard.
+
+### 4. Sistema de Alertas (Drawer)
+
+- **Ubicación**: Campanita (🔔) en el header.
+- **Funcionalidades**:
+  - **Badge rojo** con el número total de alertas (vencidas + próximas).
+  - Al hacer clic, se abre un **Drawer lateral** con:
+    - **Sección "Vencidas"**: tareas con `due_date` < fecha actual.
+    - **Sección "Próximas a vencer"**: tareas con `due_date` entre hoy y +2 días.
+  - **Actualización automática**: Cada 60 segundos sin necesidad de abrir el drawer.
+
 
 ## 🎯 FUNCIONALIDADES ESENCIALES POR DÍA
 
@@ -345,79 +317,8 @@ php artisan route:cache
 - ✅ UX mejorada
 - ✅ Testing manual
 
-## 🚨 ESTRATEGIAS DE ACELERACIÓN
-
-### 1. Priorización Estricta
-
-- **MUST HAVE**: CRUD básico, cambio de estado, alertas
-- **NICE TO HAVE**: Paginación avanzada, animaciones, tests automatizados
-- **SKIP**: Autenticación, roles, notificaciones push
-
-### 2. Código Mínimo Viable
-
-- Validación básica (sin Request classes complejas)
-- Estilos mínimos pero funcionales
-- Sin tests automatizados (testing manual)
-- Sin optimizaciones avanzadas
-
-### 3. Herramientas de Desarrollo
-
-- **Postman/Insomnia**: Para testing de API
-- **React DevTools**: Para debugging
-- **Laravel Debugbar**: Para optimización de queries
-- **Tailwind IntelliSense**: Para desarrollo rápido
-
-### 4. Flujo de Trabajo Intensivo
-
-- **Pomodoro**: 25 min trabajo, 5 min descanso
-- **Sin distracciones**: Notificaciones desactivadas
-- **Commits frecuentes**: Cada funcionalidad completa
-- **Testing continuo**: Probar cada cambio inmediatamente
-
 ## 📱 ESTRUCTURA FINAL DE COMPONENTES
 
-```
-resources/js/
-├── components/
-│   ├── ui/                    # Componentes shadcn/ui
-│   │   ├── button.jsx
-│   │   ├── card.jsx
-│   │   ├── input.jsx
-│   │   ├── label.jsx
-│   │   ├── textarea.jsx
-│   │   ├── select.jsx
-│   │   ├── checkbox.jsx
-│   │   ├── badge.jsx
-│   │   ├── sheet.jsx
-│   │   ├── table.jsx
-│   │   └── pagination.jsx
-│   ├── Layout/
-│   │   ├── Header.jsx
-│   │   ├── Sidebar.jsx
-│   │   └── Layout.jsx
-│   ├── TaskTable/
-│   │   ├── TaskTable.jsx
-│   │   ├── TaskRow.jsx
-│   │   └── TaskFilters.jsx
-│   ├── CreateTaskForm/
-│   │   ├── CreateTaskForm.jsx
-│   │   └── SubtaskInput.jsx
-│   ├── TaskDetail/
-│   │   ├── TaskDetail.jsx
-│   │   └── SubtaskList.jsx
-│   └── AlertDrawer/
-│       ├── AlertDrawer.jsx
-│       └── AlertCard.jsx
-├── pages/
-│   ├── Dashboard.jsx
-│   ├── CreateTask.jsx
-│   └── TaskDetail.jsx
-├── services/
-│   └── api.js
-├── lib/
-│   └── utils.js              # Utilidades de shadcn/ui
-└── App.jsx
-```
 
 ## 🎨 COMPONENTES SHADCN/UI PARA ACELERAR DESARROLLO
 
