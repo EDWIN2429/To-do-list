@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import NotificationsDrawer from "@/components/layout/NotificationsDrawer";
+
 import {
   Table,
   TableBody,
@@ -196,7 +198,8 @@ export default function Dashboard() {
         </div>
 
         {/* Botón Nueva Tarea */}
-        <div className="flex justify-end">
+        <div className="flex items-center gap-2">
+          <NotificationsDrawer />
           <Button
             onClick={() => navigate("/create")}
             className="bg-sky-600 hover:bg-sky-700 text-white"
@@ -341,7 +344,10 @@ export default function Dashboard() {
                     {/* Subtareas */}
                     <TableCell>
                       <div className="text-sm font-bold text-blue-500 flex flex-col gap-1">
-                        <Badge variant="secondary" className="text-sm font-bold text-blue-500 bg-blue-50 border-blue-200 w-fit">
+                        <Badge
+                          variant="secondary"
+                          className="text-sm font-bold text-blue-500 bg-blue-50 border-blue-200 w-fit"
+                        >
                           {task.subtasks?.length || 0} subtareas
                         </Badge>
                         {task.subtasks &&
@@ -356,18 +362,18 @@ export default function Dashboard() {
                               }{" "}
                               pendientes
                             </Badge>
-                            )}
-                            
-                            {task.subtasks && 
-                             task.subtasks.length > 0 && 
-                             task.subtasks.every((st) => st.is_completed) && (
-                              <Badge
-                                variant="secondary"
-                                className="text-sm font-bold text-green-500 bg-green-50 border-green-200 w-fit"
-                              >
-                                <CheckCircle2 className="h-3 w-3 mr-1" />
-                                Todas completadas
-                              </Badge>
+                          )}
+
+                        {task.subtasks &&
+                          task.subtasks.length > 0 &&
+                          task.subtasks.every((st) => st.is_completed) && (
+                            <Badge
+                              variant="secondary"
+                              className="text-sm font-bold text-green-500 bg-green-50 border-green-200 w-fit"
+                            >
+                              <CheckCircle2 className="h-3 w-3 mr-1" />
+                              Todas completadas
+                            </Badge>
                           )}
                       </div>
                     </TableCell>

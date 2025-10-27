@@ -15,37 +15,27 @@ class NotificationsController extends Controller
      *  Mostrar notificaciones activas (tareas próximas a vencer o vencidas)
      */
     public function index()
-    {
+     {
         $now = Carbon::now();
         $tomorrow = $now->copy()->addDay();
 
-        //  Buscar tareas que están próximas a vencer o vencidas
+        // Buscar tareas próximas a vencer y vencidas directamente desde la BD
         $upcoming = Task::where('status', '!=', 'Completado')
             ->whereBetween('due_date', [$now, $tomorrow])
-            ->get();
+            ->orderBy('due_date', 'asc')
+            ->get(['id', 'title', 'due_date', 'status']);
 
         $expired = Task::where('status', '!=', 'Completado')
             ->where('due_date', '<', $now)
-            ->get();
+            ->orderBy('due_date', 'asc')
+            ->get(['id', 'title', 'due_date', 'status']);
 
-        //  Generar estructura de respuesta tipo "notificaciones"
-        $notifications = [
-            'proximas' => $upcoming->map(fn($t) => [
-                'id' => $t->id,
-                'title' => $t->title,
-                'due_date' => $t->due_date,
-                'type' => 'Próxima a vencer'
-            ]),
-            'vencidas' => $expired->map(fn($t) => [
-                'id' => $t->id,
-                'title' => $t->title,
-                'due_date' => $t->due_date,
-                'type' => 'Vencida'
-            ])
-        ];
-
-        return response()->json($notifications);
+        return response()->json([
+            'proximas' => $upcoming,
+            'vencidas' => $expired,
+        ]);
     }
+
 
     /**
      * Eliminar una notificación (por ejemplo, si se reprograma)
