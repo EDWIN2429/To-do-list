@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('task_id')->constrained('tasks')->onDelete('cascade');
-            $table->enum('type', ['Próxima a vencer', 'Vencida']);
+            $table->enum('type', ['Proxima a vencer', 'Vencida']);
             $table->timestamps();
         });
     }

@@ -1,0 +1,25 @@
+
+name: Docker CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar codigo del repositorio
+        uses: actions/checkout@v6
+
+      - name: Construir imagen Laravel
+        run: docker build -t todo-list-api:1.0 ./Api
+
+      - name: Descargar imagen PostgreSQL
+        run: docker pull postgres:16-bookworm
+
+      - name: Verificar imagenes
+        run: docker images
