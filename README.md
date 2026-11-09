@@ -1,597 +1,227 @@
-# 📝 To-Do List - Sistema de Gestión de Tareas
+# To-do-list
 
-Una aplicación completa de gestión de tareas desarrollada con **Laravel 12** (backend API REST) y **React + TypeScript** (frontend SPA), que incluye subtareas, sistema de prioridades, alertas de vencimiento en tiempo real y una interfaz moderna con shadcn/ui.
+Aplicación para gestionar tareas, subtareas, prioridades y notificaciones de vencimiento. El proyecto utiliza una API desarrollada con **Laravel 12** y un frontend con **React y TypeScript**.
 
----
+Para la entrega de integración continua se configuraron **dos contenedores Docker**: uno para la API de Laravel y otro para la base de datos PostgreSQL. Ambos se comunican a través de una red interna administrada por Docker Compose.
 
-## 📑 Tabla de Contenidos
+## Tecnologías
 
-- [Características](#-características)
-- [Stack Tecnológico](#️-stack-tecnológico)
-- [Arquitectura del Proyecto](#-arquitectura-del-proyecto)
-- [Requisitos Previos](#-requisitos-previos)
-- [Instalación y Configuración](#-instalación-y-configuración)
-  - [Backend (API Laravel)](#1-backend-api-laravel)
-  - [Frontend (React)](#2-frontend-react)
-- [Estructura de Ramas Git](#-estructura-de-ramas-git)
-- [Configuración del Repositorio en GitHub](#-configuración-del-repositorio-en-github)
-- [Uso de la Aplicación](#-uso-de-la-aplicación)
-- [API Endpoints](#-api-endpoints)
-- [Componentes Principales](#️-componentes-principales)
-- [Sistema de Alertas](#-sistema-de-alertas)
-- [Variables de Entorno](#-variables-de-entorno)
-- [Scripts Disponibles](#-scripts-disponibles)
-- [Despliegue](#-despliegue)
-- [Contribución](#-contribución)
-- [Licencia](#-licencia)
+| Componente | Tecnología |
+| --- | --- |
+| Backend | Laravel 12, PHP 8.3 |
+| Frontend | React 18, TypeScript |
+| Base de datos en Docker | PostgreSQL 16 |
+| Contenedores | Docker y Docker Compose |
+| Integración continua | GitHub Actions |
 
----
+> El frontend React se ejecuta localmente durante esta entrega; los dos contenedores son la API Laravel y PostgreSQL. El proyecto también disponía de una configuración local con SQLite, independiente del entorno Docker descrito aquí.
 
-## ✨ Características
+## Estructura del proyecto
 
-### Funcionalidades Principales
-
-- **Dashboard Interactivo**: Tabla con todas las tareas, búsqueda, filtrado y paginación.
-- **CRUD Completo de Tareas**: Crear, leer, actualizar y eliminar tareas.
-- **Gestión de Subtareas**: Agregar subtareas a cada tarea y marcarlas como completadas.
-- **Estados Automáticos**: El estado de la tarea cambia automáticamente a "completado" cuando todas sus subtareas están terminadas.
-- **Sistema de Prioridades**: Clasificación en Alta, Media y Baja con indicadores visuales.
-- **Alertas de Vencimiento**: Notificaciones en tiempo real para tareas vencidas y próximas a vencer.
-- **Drawer de Notificaciones**: Panel lateral con contador en la campanita del header.
-- **Interfaz Moderna**: UI construida con shadcn/ui + Tailwind CSS.
-- **Responsive Design**: Adaptado para desktop, tablet y móvil.
-
-### Características Técnicas
-
-- **API REST**: Endpoints bien estructurados con validación y manejo de errores.
-- **Zona Horaria**: Configurada para Colombia (America/Bogota).
-- **Migraciones**: Base de datos versionada.
-- **TypeScript**: Tipado fuerte en el frontend.
-- **Axios Interceptors**: Manejo centralizado de errores HTTP.
-
----
-
-## 🛠️ Stack Tecnológico
-
-### Backend (API)
-
-| Tecnología       | Versión | Descripción                       |
-| ---------------- | ------- | --------------------------------- |
-| **Laravel**      | 12.x    | Framework PHP para API REST       |
-| **PHP**          | 8.2+    | Lenguaje de programación          |
-| **SQLite**       | 3.x     | Base de datos ligera (desarrollo) |
-| **Eloquent ORM** | -       | ORM de Laravel                    |
-| **Carbon**       | -       | Manipulación de fechas y horas    |
-
-### Frontend (SPA)
-
-| Tecnología       | Versión | Descripción                         |
-| ---------------- | ------- | ----------------------------------- |
-| **React**        | 18.x    | Biblioteca de interfaces de usuario |
-| **TypeScript**   | 5.x     | Superset tipado de JavaScript       |
-| **Vite**         | 5.x     | Empaquetador ultrarrápido           |
-| **React Router** | 6.x     | Enrutamiento del lado del cliente   |
-| **Axios**        | 1.x     | Cliente HTTP para consumo de API    |
-| **shadcn/ui**    | -       | Componentes UI con Radix UI         |
-| **Tailwind CSS** | 3.x     | Framework CSS utilitario            |
-| **Lucide React** | -       | Iconos SVG                          |
-
-
-## 📋 Requisitos Previos
-
-Antes de comenzar, asegúrate de tener instalado:
-
-- **Node.js** ≥ 18.x ([descargar](https://nodejs.org/))
-- **npm** ≥ 9.x (incluido con Node.js)
-- **PHP** ≥ 8.2 ([descargar](https://www.php.net/downloads))
-- **Composer** ≥ 2.x ([descargar](https://getcomposer.org/download/))
-- **Git** ([descargar](https://git-scm.com/downloads))
-- **SQLite** (incluido con PHP en Windows)
-
----
-
-## 🚀 Instalación y Configuración
-
-### 1) Backend (API Laravel)
-
-#### 1.1. Clonar el repositorio
-
-```bash
-git clone https://github.com/tu-usuario/To-Do-List.git
-cd To-Do-List/Api
+```text
+To-do-list/
+├── .github/
+│   └── workflows/
+│       └── docker-ci.yml
+├── Api/
+│   ├── Dockerfile
+│   ├── .dockerignore
+│   └── ...
+├── FrontEnd/
+│   └── ...
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+└── README.md
 ```
 
-#### 1.2. Instalar dependencias de PHP
+## Requisitos previos
 
-```bash
-composer install
-```
+- Git.
+- Docker Desktop con Docker Compose habilitado.
+- Node.js y npm, **solo si se va a ejecutar el frontend React localmente**.
 
-#### 1.3. Configurar el archivo `.env`
+No es necesario instalar PostgreSQL ni PHP en Windows para levantar los dos contenedores.
 
-Copia el archivo de ejemplo y edita las variables:
+## Iniciar los contenedores
 
-```bash
-copy .env.example .env
-```
+Los comandos siguientes se ejecutan desde la raíz del proyecto, en **PowerShell**.
 
-Edita `Api/.env`:
-
-```env
-APP_NAME="To-Do List API"
-APP_ENV=local
-APP_KEY=
-APP_DEBUG=true
-APP_TIMEZONE=America/Bogota
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=sqlite
-# DB_DATABASE se genera automáticamente con el siguiente comando
-
-VITE_APP_NAME="${APP_NAME}"
-```
-
-#### 1.4. Generar clave de la aplicación
-
-```bash
-php artisan key:generate
-```
-
-#### 1.5. Crear la base de datos SQLite
-
-```bash
-touch database/database.sqlite
-```
-
-_En Windows (PowerShell):_
+### 1. Clonar el repositorio
 
 ```powershell
-New-Item database/database.sqlite -ItemType File
+git clone https://github.com/EDWIN2429/To-do-list.git
+cd To-do-list
 ```
 
-#### 1.6. Ejecutar las migraciones
+### 2. Configurar las variables de entorno
 
-```bash
-php artisan migrate
+Crear el archivo privado de configuración a partir del ejemplo:
+
+```powershell
+Copy-Item .env.example .env
 ```
 
-#### 1.7. Limpiar cachés de configuración
+Editar el `.env` de la raíz con los valores correspondientes:
 
-```bash
-php artisan config:clear
-php artisan optimize:clear
+```dotenv
+APP_KEY=
+DB_DATABASE=todo_db
+DB_USERNAME=todo_user
+DB_PASSWORD=COLOCA_AQUI_UNA_CONTRASENA_SEGURA
 ```
 
-#### 1.8. Iniciar el servidor de desarrollo
+Generar una clave de Laravel con la imagen de la aplicación:
 
-```bash
-php artisan serve
+```powershell
+docker build -t todo-list-api:1.0 ./Api
+docker run --rm todo-list-api:1.0 php artisan key:generate --show
 ```
 
-El backend estará disponible en: **http://localhost:8000**
+Copiar la clave generada (que comienza por `base64:`) en `APP_KEY` del archivo `.env` de la raíz.
 
----
+**Seguridad:** el archivo `.env` contiene datos privados y no debe subirse a GitHub. El repositorio incluye `.env.example` como referencia, sin contraseñas reales.
 
-### 2) Frontend (React)
+### 3. Construir e iniciar los servicios
 
-#### 2.1. Navegar a la carpeta del frontend
-
-```bash
-cd ../FrontEnd
+```powershell
+docker compose up -d --build
 ```
 
-#### 2.2. Instalar dependencias de Node.js
+Docker Compose inicia los siguientes servicios:
 
-```bash
+| Servicio | Función | Acceso desde Windows |
+| --- | --- | --- |
+| `api` | Ejecuta la API Laravel | `http://localhost:8000` |
+| `db` | Almacena los datos en PostgreSQL | Puerto `5433` en `127.0.0.1` |
+
+Comprobar que ambos estén activos:
+
+```powershell
+docker compose ps
+```
+
+### 4. Crear las tablas de la base de datos
+
+Ejecutar las migraciones de Laravel en PostgreSQL:
+
+```powershell
+docker compose exec api php artisan migrate --force
+```
+
+Consultar su estado:
+
+```powershell
+docker compose exec api php artisan migrate:status
+```
+
+Las migraciones crean las tablas necesarias para tareas, subtareas, notificaciones y servicios internos de Laravel.
+
+## Comunicación entre contenedores
+
+Los contenedores `api` y `db` pertenecen a una red Docker propia. Laravel se conecta a PostgreSQL utilizando el **nombre del servicio**, no una IP fija ni `localhost`:
+
+```dotenv
+DB_CONNECTION=pgsql
+DB_HOST=db
+DB_PORT=5432
+```
+
+En la configuración de Docker Compose, `depends_on` espera a que PostgreSQL pase su comprobación de disponibilidad antes de iniciar Laravel. Los datos de PostgreSQL se almacenan en un volumen, de modo que se mantienen cuando se recrean los contenedores sin eliminar ese volumen.
+
+### Comprobar la comunicación
+
+Abrir la consola de Laravel:
+
+```powershell
+docker compose exec api php artisan tinker
+```
+
+Dentro de Tinker, crear una tarea de prueba:
+
+```php
+DB::table('tasks')->insertGetId([
+    'title' => 'Prueba comunicación Docker',
+    'description' => 'Registro creado desde Laravel hacia PostgreSQL',
+    'creation_date' => now(),
+    'status' => 'Pendiente',
+    'priority' => 'Media',
+    'created_at' => now(),
+    'updated_at' => now()
+]);
+```
+
+Consultar la tarea desde Laravel:
+
+```php
+DB::table('tasks')->where('title', 'Prueba comunicación Docker')->first();
+```
+
+Salir de Tinker con `exit`. Para comprobar directamente el dato en PostgreSQL:
+
+```powershell
+docker compose exec db psql -U todo_user -d todo_db -c "SELECT id, title, status, priority FROM tasks WHERE title = 'Prueba comunicación Docker';"
+```
+
+Si se modificaron los valores `DB_USERNAME` o `DB_DATABASE` en `.env`, sustituirlos también en este comando.
+
+Para inspeccionar la red:
+
+```powershell
+docker network inspect listadetareas_todo_network
+```
+
+> El nombre completo de la red depende del nombre de proyecto asignado por Docker Compose. Puede consultarse con `docker network ls`.
+
+## Frontend React (ejecución local opcional)
+
+El frontend **no es un tercer contenedor** en esta entrega. Si se desea ejecutar la interfaz web, desde la raíz del repositorio:
+
+```powershell
+cd FrontEnd
 npm install
 ```
 
-#### 2.3. Configurar el archivo `.env`
+Configurar `FrontEnd/.env` con la URL de la API:
 
-Crea `FrontEnd/.env` con:
-
-```env
+```dotenv
 VITE_API_URL=http://localhost:8000
 ```
 
-#### 2.4. Iniciar el servidor de desarrollo
+Iniciar el servidor de desarrollo:
 
-```bash
+```powershell
 npm run dev
 ```
 
-El frontend estará disponible en: **http://localhost:5173**
+Vite suele mostrar la dirección local de acceso en la terminal (habitualmente `http://localhost:5173`). El funcionamiento integrado de la interfaz debe verificarse por separado.
 
----
+## Integración continua con GitHub Actions
 
-## 🌿 Estructura de Ramas Git
+El archivo `.github/workflows/docker-ci.yml` define un workflow llamado **Docker CI** que se ejecuta en cada `push` o `pull request` hacia `main`.
 
-El proyecto sigue una estrategia de branching para organizar el desarrollo:
+Este workflow:
 
-```
-main                          # Rama principal (producción estable)
-├── feat/frontend-scaffolding # Configuración inicial del frontend (React + Vite + shadcn/ui)
-└── feature/implementación-Api # Desarrollo del backend (Laravel + API REST + Alertas)
-```
+1. Descarga el código del repositorio.
+2. Construye la imagen Docker de Laravel.
+3. Descarga la imagen oficial de PostgreSQL.
+4. Muestra las imágenes disponibles para verificar la construcción.
 
-### Descripción de Ramas
+Los resultados pueden consultarse en la pestaña **Actions** del repositorio. El workflow verifica la construcción y descarga de imágenes; **no sustituye una prueba funcional completa** de la comunicación entre servicios.
 
-| Rama                         | Descripción                                                               |
-| ---------------------------- | ------------------------------------------------------------------------- |
-| `main`                       | Código estable listo para producción. Solo se fusionan ramas completadas. |
-| `feat/frontend-scaffolding`  | Configuración inicial del frontend: React, TypeScript, Vite, shadcn/ui.   |
-| `feature/implementación-Api` | Desarrollo del backend: modelos, migraciones, controladores, alertas.     |
+## Comandos útiles
 
-### Flujo de Trabajo Git
+| Comando | Descripción |
+| --- | --- |
+| `docker compose up -d --build` | Construye e inicia los servicios |
+| `docker compose ps` | Muestra el estado de los contenedores |
+| `docker ps` | Lista los contenedores activos |
+| `docker compose logs api` | Muestra los registros de Laravel |
+| `docker compose logs db` | Muestra los registros de PostgreSQL |
+| `docker compose down` | Detiene y elimina los contenedores conservando el volumen |
 
-1. **Crear una nueva rama** desde `main` para cada feature:
+**Advertencia:** `docker compose down -v` también elimina los volúmenes del proyecto y puede borrar los datos de PostgreSQL. No utilizarlo si se desea conservar la información.
 
-   ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b feature/nombre-de-la-feature
-   ```
+## Repositorio
 
-2. **Desarrollar y hacer commits**:
-
-   ```bash
-   git add .
-   git commit -m "feat: descripción del cambio"
-   ```
-
-3. **Push a GitHub**:
-
-   ```bash
-   git push origin feature/nombre-de-la-feature
-   ```
-
-4. **Crear un Pull Request** en GitHub para fusionar a `main`.
-
-
-## 📖 Uso de la Aplicación
-
-### 1. Dashboard (Página Principal)
-
-- **URL**: `http://localhost:5173/`
-- **Funcionalidades**:
-  - Ver todas las tareas en una tabla.
-  - Buscar tareas por título.
-  - Navegar entre páginas (paginación).
-  - Botón "Crear Tarea" → redirige a `/create`.
-  - Botón "Ver" en cada fila → redirige a `/task/:id`.
-  - Botón "Eliminar" → elimina la tarea con confirmación.
-
-### 2. Crear Tarea
-
-- **URL**: `http://localhost:5173/create`
-- **Funcionalidades**:
-  - Formulario con campos:
-    - Título (requerido)
-    - Descripción
-    - Prioridad (alta | media | baja)
-    - Fecha de vencimiento (datetime-local)
-    - Subtareas (agregar/eliminar dinámicamente)
-  - Botón "Guardar" → envía POST a `/api/tasks` y redirige al Dashboard.
-
-### 3. Detalle de Tarea
-
-- **URL**: `http://localhost:5173/task/:id`
-- **Funcionalidades**:
-  - Muestra toda la información de la tarea.
-  - Lista de subtareas con checkboxes para marcar como completadas.
-  - Botón "Marcar como Completado" (solo si todas las subtareas están completas).
-  - Botón "Editar" → abre formulario de edición.
-  - Botón "Eliminar" → elimina y redirige al Dashboard.
-
-### 4. Sistema de Alertas (Drawer)
-
-- **Ubicación**: Campanita (🔔) en el header.
-- **Funcionalidades**:
-  - **Badge rojo** con el número total de alertas (vencidas + próximas).
-  - Al hacer clic, se abre un **Drawer lateral** con:
-    - **Sección "Vencidas"**: tareas con `due_date` < fecha actual.
-    - **Sección "Próximas a vencer"**: tareas con `due_date` entre hoy y +2 días.
-  - **Actualización automática**: Cada 60 segundos sin necesidad de abrir el drawer.
-
-
-## 🎯 FUNCIONALIDADES ESENCIALES POR DÍA
-
-### Día 1: Backend MVP
-
-- ✅ CRUD completo de tareas
-- ✅ CRUD completo de subtareas
-- ✅ Cambio automático de estado
-- ✅ API de alertas básica
-
-### Día 2: Frontend MVP
-
-- ✅ Dashboard con tabla
-- ✅ Formulario de creación
-- ✅ Vista de detalle
-- ✅ Sistema de alertas básico
-
-### Día 3: Integración MVP
-
-- ✅ Navegación completa
-- ✅ Filtros básicos
-- ✅ UX mejorada
-- ✅ Testing manual
-
-## 📱 ESTRUCTURA FINAL DE COMPONENTES
-
-
-## 🎨 COMPONENTES SHADCN/UI PARA ACELERAR DESARROLLO
-
-### Componentes Principales a Usar
-
-#### Botones
-
-```jsx
-import { Button } from "@/components/ui/button"
-
-// Botón principal
-<Button>Crear Tarea</Button>
-
-// Botón con variantes
-<Button variant="destructive">Eliminar</Button>
-<Button variant="outline">Cancelar</Button>
-<Button variant="secondary">Completado</Button>
-```
-
-#### Cards para Tareas
-
-```jsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-
-<Card>
-  <CardHeader>
-    <CardTitle>Título de la Tarea</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <p>Descripción de la tarea...</p>
-  </CardContent>
-</Card>;
-```
-
-#### Tabla de Tareas
-
-```jsx
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
-<Table>
-  <TableHeader>
-    <TableRow>
-      <TableHead>Tarea</TableHead>
-      <TableHead>Estado</TableHead>
-      <TableHead>Prioridad</TableHead>
-    </TableRow>
-  </TableHeader>
-  <TableBody>{/* Filas de tareas */}</TableBody>
-</Table>;
-```
-
-#### Formularios
-
-```jsx
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-
-<Label htmlFor="title">Título</Label>
-<Input id="title" placeholder="Título de la tarea" />
-
-<Label htmlFor="description">Descripción</Label>
-<Textarea id="description" placeholder="Descripción..." />
-
-<Select>
-  <SelectTrigger>
-    <SelectValue placeholder="Seleccionar prioridad" />
-  </SelectTrigger>
-  <SelectContent>
-    <SelectItem value="alta">Alta</SelectItem>
-    <SelectItem value="media">Media</SelectItem>
-    <SelectItem value="baja">Baja</SelectItem>
-  </SelectContent>
-</Select>
-```
-
-#### Badges para Estados
-
-```jsx
-import { Badge } from "@/components/ui/badge"
-
-<Badge variant="default">Pendiente</Badge>
-<Badge variant="secondary">En Proceso</Badge>
-<Badge variant="destructive">Completado</Badge>
-```
-
-#### Sheet para Alertas
-
-```jsx
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-
-<Sheet>
-  <SheetTrigger asChild>
-    <Button variant="outline">Ver Alertas</Button>
-  </SheetTrigger>
-  <SheetContent>
-    <SheetHeader>
-      <SheetTitle>Alertas de Vencimiento</SheetTitle>
-      <SheetDescription>
-        Tareas próximas a vencer o ya vencidas
-      </SheetDescription>
-    </SheetHeader>
-    {/* Contenido de alertas */}
-  </SheetContent>
-</Sheet>;
-```
-
-### Colores por Estado (shadcn/ui)
-
-- **Pendiente**: `default` (azul)
-- **En Proceso**: `secondary` (gris)
-- **Completado**: `destructive` (verde)
-- **Cancelado**: `outline` (borde)
-
-### Colores por Prioridad
-
-- **Alta**: `destructive` (rojo)
-- **Media**: `secondary` (naranja)
-- **Baja**: `default` (verde)
-
-## 🛣️ CONFIGURACIÓN DE REACT ROUTER
-
-### Estructura de Rutas
-
-```jsx
-// App.jsx
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout/Layout";
-import Dashboard from "./pages/Dashboard";
-import CreateTask from "./pages/CreateTask";
-import TaskDetail from "./pages/TaskDetail";
-
-function App() {
-  return (
-    <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/create" element={<CreateTask />} />
-          <Route path="/task/:id" element={<TaskDetail />} />
-        </Routes>
-      </Layout>
-    </Router>
-  );
-}
-```
-
-### Navegación entre Vistas
-
-```jsx
-import { useNavigate } from "react-router-dom";
-
-// En Dashboard.jsx
-const navigate = useNavigate();
-
-const handleCreateTask = () => {
-  navigate("/create");
-};
-
-const handleViewTask = (taskId) => {
-  navigate(`/task/${taskId}`);
-};
-
-// En CreateTask.jsx
-const handleCancel = () => {
-  navigate("/");
-};
-
-// En TaskDetail.jsx
-const handleBack = () => {
-  navigate("/");
-};
-```
-
-### Componente Layout con Navegación
-
-```jsx
-// Layout.jsx
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-
-export default function Layout({ children }) {
-  const location = useLocation();
-
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <Link to="/" className="text-xl font-bold text-gray-900">
-              ToDo List Avanzado
-            </Link>
-            <div className="flex space-x-4">
-              <Link to="/">
-                <Button
-                  variant={location.pathname === "/" ? "default" : "ghost"}
-                >
-                  Dashboard
-                </Button>
-              </Link>
-              <Link to="/create">
-                <Button>Crear Tarea</Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {children}
-      </main>
-    </div>
-  );
-}
-```
-
-## 🚀 CHECKLIST FINAL (Día 3)
-
-### Funcionalidades Core ✅
-
-- [ ] Crear tarea con subtareas
-- [ ] Ver lista de tareas en tabla
-- [ ] Marcar subtareas como completadas
-- [ ] Cambio automático de estado de tarea
-- [ ] Completar tarea cuando todas las subtareas están listas
-- [ ] Alertas para tareas próximas a vencer
-- [ ] Filtros básicos (estado, prioridad)
-- [ ] Navegación entre vistas
-
-### UX Básica ✅
-
-- [ ] Interfaz responsive
-- [ ] Indicadores visuales de estado
-- [ ] Mensajes de confirmación
-- [ ] Loading states básicos
-- [ ] Manejo de errores
-
-### Técnico ✅
-
-- [ ] API REST funcional
-- [ ] Base de datos con relaciones
-- [ ] Frontend React con routing
-- [ ] Build de producción funcionando
-
-## 🎯 RESULTADO FINAL
-
-Al final de los 3 días tendrás:
-
-✅ **Aplicación completamente funcional** con todas las características solicitadas
-✅ **Backend Laravel robusto** con API REST
-✅ **Frontend React moderno** con navegación
-✅ **Base de datos bien estructurada** con relaciones
-✅ **Sistema de alertas operativo**
-✅ **Interfaz de usuario profesional**
-
-**¡Listo para usar y demostrar!** 🚀
-
----
-
-**Desarrollado con ❤️ en 72 horas usando Laravel 12 y React**
-
-_Plan intensivo diseñado para máxima productividad en tiempo mínimo._
+[GitHub — EDWIN2429/To-do-list](https://github.com/EDWIN2429/To-do-list)
